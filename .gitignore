@@ -1,0 +1,4 @@
+myenv
+pip_install
+/node_modules
+/build
