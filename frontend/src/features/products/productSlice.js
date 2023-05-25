@@ -18,11 +18,9 @@ export const getProducts = createAsyncThunk(
       return await productService.getProducts();
     } catch (error) {
       const message =
-        (error.response &&
-          error.response.data &&
-          error.response.data.message) ||
-        error.message ||
-        error.toString();
+        error.response && error.response.data.detail
+          ? error.response.data.detail
+          : error.message;
 
       return thunkAPI.rejectWithValue(message);
     }
@@ -37,11 +35,9 @@ export const getProduct = createAsyncThunk(
       return await productService.getProduct(productId);
     } catch (error) {
       const message =
-        (error.response &&
-          error.response.data &&
-          error.response.data.message) ||
-        error.message ||
-        error.toString();
+        error.response && error.response.data.detail
+          ? error.response.data.detail
+          : error.message;
 
       return thunkAPI.rejectWithValue(message);
     }

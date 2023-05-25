@@ -11,10 +11,10 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import Message from '../components/Message';
-import { addToCart, removeFromCart } from '../features/cart/cartSlice';
+import { addToCart, removeFromCart, reset } from '../features/cart/cartSlice';
 
 function Cart() {
-  const { productId } = useParams();
+  const { id } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
 
@@ -24,34 +24,41 @@ function Cart() {
 
   const dispatch = useDispatch();
   const { cartItems } = useSelector((state) => state.cart);
-  console.log(cartItems);
+  const { userInfo } = useSelector((state) => state.user.userLogin);
 
   useEffect(() => {
-    if (productId) {
-      dispatch(addToCart(productId, quantity));
+    if (id) {
+      dispatch(addToCart({ id, quantity }));
     }
-  }, [dispatch, productId, quantity]);
+  }, [dispatch, id, quantity]);
 
-  const removeFromCartHandler = (productId) => {
-    dispatch(removeFromCart(productId));
+  const removeFromCartHandler = (e, id) => {
+    e.preventDefault();
+    dispatch(removeFromCart(id));
+
+    navigate('/cart/');
   };
 
   const checkoutHandler = () => {
-    navigate('/login?redirect=shipping');
+    if (userInfo) {
+      navigate('/shipping');
+    } else {
+      navigate('/login', { state: { redirect: '/shipping' } });
+    }
   };
 
   return (
     <Row>
       <Col md={8}>
         <h1>Shopping Cart</h1>
-        {cartItems.length === 0 ? (
+        {!cartItems || cartItems.length === 0 ? (
           <Message variant="info">
             <div className="d-flex justify-content-evenly">
               <span className="fs-4">Your cart is empty.</span>
               <button
                 type="button"
                 className="btn text-decoration-underline"
-                onClick={() => navigate(-1)}
+                onClick={() => navigate('/')}
               >
                 <span className="fs-5">Go Back</span>
               </button>
@@ -73,11 +80,13 @@ function Cart() {
                     <Form.Control
                       as="select"
                       value={item.qty}
-                      onChange={(e) =>
-                        dispatch(
-                          addToCart(item.product, Number(e.target.value))
-                        )
-                      }
+                      onChange={(e) => {
+                        const itemData = {
+                          id: item.product,
+                          quantity: Number(e.target.value),
+                        };
+                        dispatch(addToCart(itemData));
+                      }}
                     >
                       {[...Array(item.countInStock).keys()].map((num) => (
                         <option key={num + 1} value={num + 1}>
@@ -91,7 +100,7 @@ function Cart() {
                     <Button
                       type="button"
                       variant="light"
-                      onClick={() => removeFromCartHandler(item.product)}
+                      onClick={(e) => removeFromCartHandler(e, item.product)}
                     >
                       <i className="fas fa-trash"></i>
                     </Button>
@@ -108,11 +117,16 @@ function Cart() {
           <ListGroup variant="flush">
             <ListGroup.Item>
               <h2>
-                Subtotal ({cartItems.reduce((acc, item) => acc + item.qty, 0)})
-                item(s) $
+                Subtotal (
                 {cartItems
-                  .reduce((acc, item) => acc + item.qty * item.price, 0)
-                  .toFixed(2)}
+                  ? cartItems.reduce((acc, item) => acc + Number(item.qty), 0)
+                  : '0'}
+                ) item(s) $
+                {cartItems
+                  ? cartItems
+                      .reduce((acc, item) => acc + item.qty * item.price, 0)
+                      .toFixed(2)
+                  : '0'}
               </h2>
             </ListGroup.Item>
 

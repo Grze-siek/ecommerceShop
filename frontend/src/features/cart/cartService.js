@@ -1,12 +1,9 @@
 import axios from 'axios';
-import { addToCart, removeFromCart } from './cartSlice';
 
-const API_URL = '/api/products/';
-
-export const addToCartService = (itemId, qty) => async (dispatch, getState) => {
+export const addToCartService = async (itemId, qty, cartItems) => {
   try {
-    const { data } = await axios.get(API_URL + itemId);
-    console.log('data: ', data);
+    const { data } = await axios.get(`/api/products/${itemId}`);
+
     const item = {
       product: data._id,
       name: data.name,
@@ -15,38 +12,52 @@ export const addToCartService = (itemId, qty) => async (dispatch, getState) => {
       countInStock: data.countInStock,
       qty,
     };
-    dispatch(item);
 
-    localStorage.setItem(
-      'cartItems',
-      JSON.stringify(getState().cart.cartItems)
-    );
+    const updatedCartItems = [...cartItems, item]; // Add the new item to the existing cart items
+
+    localStorage.setItem('cartItems', JSON.stringify(updatedCartItems));
+
     return item;
   } catch (error) {
     // Handle any error if needed
+    console.log(error);
+    throw error; // Rethrow the error to be caught by the caller
   }
 };
 
-export const removeFromCartService = (id, state) => (dispatch, getState) => {
+export const removeFromCartService = (updatedCartItems) => {
   try {
-    dispatch(removeFromCart(id));
-
-    localStorage.setItem(
-      'cartItems',
-      JSON.stringify(getState().cart.cartItems)
-    );
-    return {
-      ...state,
-      cartItems: state.cartItems.filter((x) => x.product !== id),
-    };
+    localStorage.setItem('cartItems', JSON.stringify(updatedCartItems));
   } catch (error) {
-    // Handle any error if needed
+    console.log(error);
+  }
+};
+
+export const saveShippingAddress = async (data) => {
+  try {
+    localStorage.setItem('shippingAddress', JSON.stringify(data));
+    return data;
+  } catch (error) {
+    console.log(error);
+    throw error;
+  }
+};
+
+export const savePaymentMethod = async (data) => {
+  try {
+    localStorage.setItem('paymentMethod', JSON.stringify(data));
+    return data;
+  } catch (error) {
+    console.log(error);
+    throw error;
   }
 };
 
 const cartService = {
   addToCartService,
   removeFromCartService,
+  saveShippingAddress,
+  savePaymentMethod,
 };
 
 export default cartService;
