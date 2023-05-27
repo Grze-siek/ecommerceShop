@@ -5,7 +5,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import FormContainer from '../components/FormContainer';
 import Message from '../components/Message';
 import Spinner from '../components/Spinner';
-import { register, reset } from '../features/user/userSlice';
+import { register } from '../features/user/userSlice';
 
 function Register() {
   const [name, setName] = useState('');
@@ -23,20 +23,17 @@ function Register() {
     : '/';
 
   const {
-    userRegister,
+    user,
     isLoading,
     isError,
-    isSuccess,
     message: error,
-  } = useSelector((state) => state.user);
+  } = useSelector((state) => state.user.userRegister);
 
   useEffect(() => {
-    if (isSuccess || Object.keys(userRegister).length !== 0) {
+    if (user) {
       navigate(redirect);
     }
-
-    // dispatch(reset());
-  }, [dispatch, redirect, isSuccess, navigate, userRegister]);
+  }, [redirect, navigate, user]);
 
   const sumbitHandler = (e) => {
     e.preventDefault();

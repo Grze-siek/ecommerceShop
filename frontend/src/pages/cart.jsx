@@ -11,7 +11,7 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import Message from '../components/Message';
-import { addToCart, removeFromCart, reset } from '../features/cart/cartSlice';
+import { addToCart, removeFromCart } from '../features/cart/cartSlice';
 
 function Cart() {
   const { id } = useParams();
@@ -73,7 +73,7 @@ function Cart() {
                     <Image src={item.image} alt={item.name} fluid rounded />
                   </Col>
                   <Col md={3}>
-                    <Link to={`/products/${item.product}`}>{item.name}</Link>
+                    <Link to={`/product/${item.product}`}>{item.name}</Link>
                   </Col>
                   <Col md={2}>${item.price}</Col>
                   <Col md={3}>

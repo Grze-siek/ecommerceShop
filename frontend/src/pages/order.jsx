@@ -9,7 +9,8 @@ import {
   getOrderDetails,
   updateOrderPay,
   updateOrderDeliver,
-  reset,
+  resetOrderPay,
+  resetOrderDeliver,
 } from '../features/order/orderSlice';
 
 function Order() {
@@ -20,8 +21,7 @@ function Order() {
   const [sdkReady, setSdkReady] = useState(false);
 
   const { orderDetails } = useSelector((state) => state.order);
-  const { order, isError, message: error, isLoading, isSuccess } = orderDetails;
-  console.log('Order: ', orderDetails);
+  const { order, isError, message: error, isLoading } = orderDetails;
 
   const { isLoading: loadingPay, isSuccess: successPay } = useSelector(
     (state) => state.order.paymentStatus
@@ -64,7 +64,8 @@ function Order() {
       order._id !== Number(orderId) ||
       successDeliver
     ) {
-      // dispatch(reset());
+      dispatch(resetOrderDeliver());
+      dispatch(resetOrderPay());
 
       dispatch(getOrderDetails(orderId));
     } else if (!order.isPaid) {

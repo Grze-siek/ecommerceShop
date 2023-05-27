@@ -3,6 +3,13 @@ import orderService from './orderService';
 import { resetCart } from '../cart/cartSlice';
 
 const initialState = {
+  orderList: {
+    orders: [],
+    isSuccess: false,
+    isError: false,
+    isLoading: false,
+    message: '',
+  },
   myOrderList: {
     orders: [],
     isSuccess: false,
@@ -10,7 +17,13 @@ const initialState = {
     isLoading: false,
     message: '',
   },
-  createOrder: {},
+  orderCreate: {
+    order: {},
+    isError: false,
+    isSuccess: false,
+    isLoading: false,
+    message: '',
+  },
   orderDetails: {},
   paymentStatus: {
     isLoading: false,
@@ -26,15 +39,11 @@ const initialState = {
     message: '',
   },
   orders: [],
-  isError: false,
-  isSuccess: false,
-  isLoading: false,
-  message: '',
 };
 
 //Get My Order List
 export const getMyOrderList = createAsyncThunk(
-  'order/getAll',
+  'order/me/getAll',
   async (_, thunkAPI) => {
     try {
       const state = thunkAPI.getState();
@@ -62,7 +71,6 @@ export const createOrder = createAsyncThunk(
 
       // Reset the cartItems state to an empty array
       thunkAPI.dispatch(resetCart());
-      console.log('createsOrder: ', createdOrder);
       return createdOrder;
     } catch (error) {
       const message =
@@ -80,7 +88,6 @@ export const getOrderDetails = createAsyncThunk(
   'order/details',
   async (id, thunkAPI) => {
     try {
-      console.log('id: ', id);
       const state = thunkAPI.getState();
       const { token } = state.user.userLogin.userInfo;
       return await orderService.getOrderDetails(id, token);
@@ -142,19 +149,37 @@ export const updateOrderDeliver = createAsyncThunk(
   }
 );
 
+//Get List of all orders
+export const getOrderList = createAsyncThunk(
+  'order/getAll',
+  async (_, thunkAPI) => {
+    try {
+      const state = thunkAPI.getState();
+      const { token } = state.user.userLogin.userInfo;
+      return await orderService.getOrders(token);
+    } catch (error) {
+      const message =
+        error.response && error.response.data.detail
+          ? error.response.data.detail
+          : error.message;
+
+      return thunkAPI.rejectWithValue(message);
+    }
+  }
+);
+
 export const orderSlice = createSlice({
   name: 'order',
   initialState,
   reducers: {
-    reset: (state) => {
-      state.myOrderList = initialState.myOrderList;
-      state.createOrder = initialState.createOrder;
-      state.orderDetails = initialState.orderDetails;
-      state.orders = initialState.orders;
-      state.isLoading = false;
-      state.isError = false;
-      state.isSuccess = false;
-      state.message = '';
+    resetOrderPay: (state) => {
+      state.paymentStatus = initialState.paymentStatus;
+    },
+    resetOrderDeliver: (state) => {
+      state.deliverStatus = initialState.deliverStatus;
+    },
+    resetOrderCreate: (state) => {
+      state.orderCreate = initialState.orderCreate;
     },
   },
   extraReducers: (builder) => {
@@ -173,21 +198,21 @@ export const orderSlice = createSlice({
         state.myOrderList.message = action.payload;
       })
       .addCase(createOrder.pending, (state) => {
-        state.isLoading = true;
+        state.orderCreate.isLoading = true;
       })
       .addCase(createOrder.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.isSuccess = true;
-        state.createOrder = action.payload;
+        state.orderCreate.isLoading = false;
+        state.orderCreate.isSuccess = true;
+        state.orderCreate.order = action.payload;
         state.cart = {
           ...state.cart,
-          cartItems: [], // Set cartItems to an empty array
+          cartItems: [],
         };
       })
       .addCase(createOrder.rejected, (state, action) => {
-        state.isLoading = false;
-        state.isError = true;
-        state.message = action.payload;
+        state.orderCreate.isLoading = false;
+        state.orderCreate.isError = true;
+        state.orderCreate.message = action.payload;
       })
       .addCase(getOrderDetails.pending, (state) => {
         state.isLoading = true;
@@ -227,9 +252,23 @@ export const orderSlice = createSlice({
         state.deliverStatus.isLoading = false;
         state.deliverStatus.isError = true;
         state.deliverStatus.message = action.payload;
+      })
+      .addCase(getOrderList.pending, (state) => {
+        state.orderList.isLoading = true;
+      })
+      .addCase(getOrderList.fulfilled, (state, action) => {
+        state.orderList.isLoading = false;
+        state.orderList.isSuccess = true;
+        state.orderList.orders = action.payload;
+      })
+      .addCase(getOrderList.rejected, (state, action) => {
+        state.orderList.isLoading = false;
+        state.orderList.isError = true;
+        state.orderList.message = action.payload;
       });
   },
 });
 
-export const { reset } = orderSlice.actions;
+export const { resetOrderPay, resetOrderDeliver, resetOrderCreate } =
+  orderSlice.actions;
 export default orderSlice.reducer;

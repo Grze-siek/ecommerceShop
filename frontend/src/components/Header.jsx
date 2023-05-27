@@ -4,19 +4,22 @@ import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import { useDispatch, useSelector } from 'react-redux';
 import { LinkContainer } from 'react-router-bootstrap';
-import { useNavigate } from 'react-router-dom';
-import { logout, reset } from '../features/user/userSlice';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { logout } from '../features/user/userSlice';
+import SearchBox from './SearchBox';
 
 function Header() {
   const { userInfo } = useSelector((state) => state.user.userLogin);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
 
   const logoutHandler = () => {
     dispatch(logout());
-    dispatch(reset());
     navigate('/');
   };
+
+  const isCartActive = location.pathname === '/cart';
   return (
     <header>
       <Navbar bg="dark" variant="dark" expand="lg" collapseOnSelect>
@@ -27,9 +30,10 @@ function Header() {
 
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
-            <Nav className="me-auto">
+            <SearchBox />
+            <Nav className="mr-auto">
               <LinkContainer to="/cart">
-                <Nav.Link>
+                <Nav.Link active={isCartActive}>
                   <i className="fas fa-shopping-cart"></i> Cart
                 </Nav.Link>
               </LinkContainer>

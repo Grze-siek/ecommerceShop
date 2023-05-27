@@ -7,7 +7,7 @@ import Message from '../components/Message';
 import {
   getUserDetails,
   updateUserProfile,
-  reset,
+  resetUserUpdateProfile,
 } from '../features/user/userSlice';
 import { getMyOrderList } from '../features/order/orderSlice';
 import { useNavigate } from 'react-router-dom';
@@ -22,9 +22,12 @@ function UserProfile() {
   const dispatch = useDispatch();
 
   const { userInfo } = useSelector((state) => state.user.userLogin);
-  const { isError, error, isLoading, user } = useSelector(
-    (state) => state.user.userDetails
-  );
+  const {
+    isError,
+    message: error,
+    isLoading,
+    user,
+  } = useSelector((state) => state.user.userDetails);
   const userUpdateProfile = useSelector(
     (state) => state.user.userUpdateProfile
   );
@@ -44,6 +47,7 @@ function UserProfile() {
       navigate('/login');
     } else {
       if (!user || !user.name || isSuccess || userInfo._id !== user._id) {
+        dispatch(resetUserUpdateProfile());
         dispatch(getUserDetails('profile'));
         dispatch(getMyOrderList());
       } else {
@@ -56,7 +60,7 @@ function UserProfile() {
   const submitHandler = (e) => {
     e.preventDefault();
 
-    if (password != confirmPassword) {
+    if (password !== confirmPassword) {
       setMessage('Passwords do not match');
     } else {
       dispatch(

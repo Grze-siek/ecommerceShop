@@ -35,7 +35,6 @@ const getOrderDetails = async (id, token) => {
     },
   };
   const response = await axios.get(API_URL + `/${id}/`, config);
-  console.log(response);
   return response.data;
 };
 
@@ -71,12 +70,25 @@ const updateOrderDeliver = async (order, token) => {
   return response.data;
 };
 
+const getOrders = async (token) => {
+  const config = {
+    headers: {
+      'Content-type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+  };
+  const response = await axios.get('/api/orders/', config);
+
+  return response.data;
+};
+
 const orderService = {
   getMyOrders,
   createOrder,
   getOrderDetails,
   updateOrderPayment,
   updateOrderDeliver,
+  getOrders,
 };
 
 export default orderService;

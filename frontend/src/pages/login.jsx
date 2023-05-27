@@ -5,7 +5,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import FormContainer from '../components/FormContainer';
 import Message from '../components/Message';
 import Spinner from '../components/Spinner';
-import { login, reset } from '../features/user/userSlice';
+import { login } from '../features/user/userSlice';
 
 function Login() {
   const [email, setEmail] = useState('');
@@ -19,17 +19,18 @@ function Login() {
     ? new URLSearchParams(location.search).get('redirect')
     : '/';
 
-  const { userInfo, isLoading, isError, isSuccess, message } = useSelector(
-    (state) => state.user.userLogin
-  );
+  const {
+    userInfo,
+    isLoading,
+    isError,
+    message: error,
+  } = useSelector((state) => state.user.userLogin);
 
   useEffect(() => {
-    if (isSuccess || userInfo) {
+    if (userInfo) {
       navigate(redirect);
     }
-
-    // dispatch(reset());
-  }, [dispatch, redirect, isSuccess, navigate, userInfo]);
+  }, [redirect, navigate, userInfo]);
 
   const sumbitHandler = (e) => {
     e.preventDefault();
@@ -47,7 +48,7 @@ function Login() {
   return (
     <FormContainer>
       <h2>Sign In</h2>
-      {isError && <Message variant="danger">{message}</Message>}
+      {isError && <Message variant="danger">{error}</Message>}
       <Form onSubmit={sumbitHandler}>
         <Form.Group controlId="email">
           <Form.Label>Email Address</Form.Label>

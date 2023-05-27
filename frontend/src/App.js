@@ -13,10 +13,12 @@ import PlaceOrder from './pages/placeOrder';
 import Order from './pages/order';
 import UserList from './pages/userList';
 import EditUser from './pages/editUser';
+import ProductList from './pages/productList';
+import EditProduct from './pages/editProduct';
+import OrderList from './pages/orderList';
 
 import { Container } from 'react-bootstrap';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import ProductList from './pages/productList';
 
 function App() {
   return (
@@ -40,6 +42,9 @@ function App() {
             <Route path="/admin/user/:id/edit" element={<EditUser />} />
 
             <Route path="/admin/productlist" element={<ProductList />} />
+            <Route path="/admin/product/:id/edit" element={<EditProduct />} />
+
+            <Route path="/admin/orderlist" element={<OrderList />} />
           </Routes>
         </Container>
       </main>

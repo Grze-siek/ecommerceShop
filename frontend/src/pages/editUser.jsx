@@ -30,6 +30,7 @@ function EditUser() {
     isLoading: loadingUpdate,
     isSuccess: successUpdate,
   } = userUpdate;
+  console.log('user:', user);
 
   useEffect(() => {
     if (successUpdate) {

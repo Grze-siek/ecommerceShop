@@ -11,26 +11,40 @@ const initialState = {
     isError: false,
     message: '',
   },
-  userRegister: {},
-  userDetails: { user: {}, isError: false, isLoading: false, error: '' },
+  userRegister: {
+    user: null,
+    isError: false,
+    isLoading: false,
+    message: '',
+  },
+  userDetails: {
+    user: {},
+    isError: false,
+    isLoading: false,
+    message: '',
+  },
   userUpdateProfile: {
     updatedProfile: {},
     isError: false,
     isLoading: false,
-    error: '',
+    message: '',
   },
   userUpdateByAdmin: {
     updatedUser: {},
     isError: false,
     isLoading: false,
-    error: '',
+    message: '',
   },
-  userList: { users: [], isLoading: false, isError: false, message: '' },
-  deletedUser: { isSuccess: false, message: '' },
-  isError: false,
-  isSuccess: false,
-  isLoading: false,
-  message: '',
+  userList: {
+    users: [],
+    isLoading: false,
+    isError: false,
+    message: '',
+  },
+  deletedUser: {
+    isSuccess: false,
+    message: '',
+  },
 };
 
 //Register new user
@@ -163,51 +177,45 @@ export const userSlice = createSlice({
   name: 'user',
   initialState,
   reducers: {
+    resetUserUpdateProfile: (state) => {
+      state.userUpdateProfile = initialState.userUpdateProfile;
+    },
+    resetUserRegister: (state) => {
+      state.userUpdateProfile = initialState.userUpdateProfile;
+    },
     resetUserUpdate: (state) => {
       return {
         ...state,
         userUpdateByAdmin: initialState.userUpdateByAdmin,
       };
     },
-    reset: (state) => {
-      state.userLogin = initialState.userLogin;
-      state.userDetails = initialState.userDetails;
-      state.userUpdateProfile = initialState.userUpdateProfile;
-      state.userList = initialState.userList;
-      state.isLoading = false;
-      state.isError = false;
-      state.isSuccess = false;
-      state.message = '';
-    },
   },
   extraReducers: (builder) => {
     builder
       .addCase(register.pending, (state) => {
-        state.isLoading = true;
+        state.userRegister.isLoading = true;
       })
       .addCase(register.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.isSuccess = true;
-        state.userRegister = action.payload;
+        state.userRegister.isLoading = false;
+        state.userRegister = initialState.userRegister;
         state.userLogin.userInfo = action.payload;
       })
       .addCase(register.rejected, (state, action) => {
-        state.isLoading = false;
-        state.isError = true;
-        state.message = action.payload;
-        state.userRegister = null;
+        state.userRegister.isLoading = false;
+        state.userRegister.isError = true;
+        state.userRegister.message = action.payload;
+        state.userRegister.user = null;
       })
       .addCase(logout.fulfilled, (state) => {
-        state.userLogin.userInfo = null;
-        state.userList = null;
-        state.userDetails = null;
+        state.userLogin = initialState.userLogin;
+        state.userList = initialState.userList;
+        state.userDetails = initialState.userDetails;
       })
       .addCase(login.pending, (state) => {
         state.userLogin.isLoading = true;
       })
       .addCase(login.fulfilled, (state, action) => {
         state.userLogin.isLoading = false;
-        state.userLogin.isSuccess = true;
         state.userLogin.userInfo = action.payload;
       })
       .addCase(login.rejected, (state, action) => {
@@ -227,7 +235,7 @@ export const userSlice = createSlice({
       .addCase(getUserDetails.rejected, (state, action) => {
         state.userDetails.isLoading = false;
         state.userDetails.isError = true;
-        state.userDetails.error = action.payload;
+        state.userDetails.message = action.payload;
         state.userDetails.user = null;
       })
       .addCase(updateUserProfile.pending, (state) => {
@@ -243,7 +251,7 @@ export const userSlice = createSlice({
       .addCase(updateUserProfile.rejected, (state, action) => {
         state.userUpdateProfile.isLoading = false;
         state.userUpdateProfile.isError = true;
-        state.userUpdateProfile.error = action.payload;
+        state.userUpdateProfile.message = action.payload;
       })
       .addCase(getUserList.pending, (state) => {
         state.userList.isLoading = true;
@@ -270,14 +278,15 @@ export const userSlice = createSlice({
         state.userUpdateByAdmin.isLoading = false;
         state.userUpdateByAdmin.isSuccess = true;
         state.userUpdateByAdmin.updatedUser = action.payload;
+        state.userDetails.user = action.payload;
       })
       .addCase(updateUser.rejected, (state, action) => {
         state.userUpdateByAdmin.isLoading = false;
         state.userUpdateByAdmin.isError = true;
-        state.userUpdateByAdmin.error = action.payload;
+        state.userUpdateByAdmin.message = action.payload;
       });
   },
 });
 
-export const { reset, resetUserUpdate } = userSlice.actions;
+export const { resetUserUpdate, resetUserUpdateProfile } = userSlice.actions;
 export default userSlice.reducer;

@@ -1,18 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { Button, Row, Col, ListGroup, Image, Card } from 'react-bootstrap';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import Message from '../components/Message';
 import CheckoutSteps from '../components/CheckoutSteps';
-import { createOrder, reset } from '../features/order/orderSlice';
+import { createOrder, resetOrderCreate } from '../features/order/orderSlice';
 
 function PlaceOrder() {
   const {
-    createOrder: order,
+    order,
     isError,
     isSuccess,
     message: error,
-  } = useSelector((state) => state.order);
+  } = useSelector((state) => state.order.orderCreate);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -38,7 +38,7 @@ function PlaceOrder() {
   useEffect(() => {
     if (isSuccess) {
       navigate(`/order/${order._id}`);
-      dispatch(reset());
+      dispatch(resetOrderCreate());
     }
   }, [isSuccess, navigate]);
 
