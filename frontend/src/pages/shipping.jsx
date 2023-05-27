@@ -12,10 +12,16 @@ function Shipping() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const [address, setAddress] = useState(shippingAddress.address);
-  const [city, setCity] = useState(shippingAddress.city);
-  const [postalCode, setPostalCode] = useState(shippingAddress.postalCode);
-  const [country, setCountry] = useState(shippingAddress.country);
+  const [address, setAddress] = useState(
+    shippingAddress ? shippingAddress.address : ''
+  );
+  const [city, setCity] = useState(shippingAddress ? shippingAddress.city : '');
+  const [postalCode, setPostalCode] = useState(
+    shippingAddress ? shippingAddress.postalCode : ''
+  );
+  const [country, setCountry] = useState(
+    shippingAddress ? shippingAddress.country : ''
+  );
 
   const submitHandler = (e) => {
     e.preventDefault();

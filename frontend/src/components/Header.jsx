@@ -10,6 +10,7 @@ import SearchBox from './SearchBox';
 
 function Header() {
   const { userInfo } = useSelector((state) => state.user.userLogin);
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
